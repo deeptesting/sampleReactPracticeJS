@@ -1,4 +1,5 @@
 import React from 'react';
+import { AddressRender } from "./Address";
 
 export function Home(props) {
 
@@ -9,12 +10,34 @@ export function Home(props) {
         city: "Kolkata",
         pincode: "700051"
     }
-    const [address, setAddress] = React.useState(defaultAddress);
+    const [homeAddress, setHomeAddress] = React.useState(defaultAddress);
+    const [currentAddress, setCurrentAddress] = React.useState({});
 
-    // Example changeAddress({houseno: event.target.value});
-    const changeAddress = (assignedAddressChange) =>{
-        setAddress((prevState)=>{ return({...prevState, ...assignedAddressChange }) });
+    const [IscheckedAddress, setIscheckedAddress] = React.useState(false);
+
+
+    const _onAddressChange = (updatedAddress) => {
+        console.log("updatedAddress ", updatedAddress);
+        setHomeAddress(updatedAddress);
     }
+
+    const _onCurrentAddressChange = (updatedAddress) => {
+        setCurrentAddress(updatedAddress);
+    }
+
+    const _onChange = (event) => { setName(event.target.value); }
+
+    const _onCheckAddressChange = (event) => { 
+        setIscheckedAddress(!IscheckedAddress);
+    }
+
+    React.useEffect(()=>{
+      if(IscheckedAddress){
+        setCurrentAddress(homeAddress);
+      }else{
+        setCurrentAddress({});
+      }
+    },[IscheckedAddress])
 
     return (
         <div>
@@ -22,47 +45,28 @@ export function Home(props) {
             <form>
                 <div>
                     <label>Name</label>
-                    <input type="text" value={name} onChange={(event) => { setName(event.target.value); }} />
+                    <input type="text" value={name} onChange={_onChange} />
                 </div>
                 <div>
-                    <h3>Address</h3>
-                    <div>
-                        <label>HouseNo</label>
-                        <input type="text" value={address.houseno} onChange={(event) => { 
-                            changeAddress({houseno: event.target.value});
-                             //setAddress((prevState)=>{ return({...prevState, houseno: event.target.value}) });
-                        }} />
-                    </div>
-                    <div>
-                        <label>Street</label>
-                        <input type="text" value={address.streetname} onChange={(event) => { 
-                             //setAddress((prevState)=>{ return({...prevState, streetname: event.target.value}) });
-                             changeAddress({streetname: event.target.value});
-                        }} />
-                    </div>
-                    <div>
-                        <label>City</label>
-                        <input type="text" value={address.city} onChange={(event) => { 
-                             //setAddress((prevState)=>{ return({...prevState, city: event.target.value}) });
-                             changeAddress({city: event.target.value});
-                        }} />
-                    </div>
-                    <div>
-                        <label>PinCode</label>
-                        <input type="text" value={address.pincode} onChange={(event) => { 
-                             //setAddress((prevState)=>{ return({...prevState, pincode: event.target.value}) });
-                             changeAddress({pincode: event.target.value});
-                        }} />
-                    </div>
+                    <label>Home Address </label>
+                    <AddressRender value={homeAddress} onAddressChange={_onAddressChange}></AddressRender>
                 </div>
+                <div>
+                <label>Current Address  {IscheckedAddress.toString()}</label><br/>
+                <input type="checkbox" id="checkAddress" name="checkAddress" value={IscheckedAddress} onChange={_onCheckAddressChange} />
+                  <label for="checkAddress"> Is Same as Home address ?</label>
+                <AddressRender value={currentAddress} onAddressChange={_onCurrentAddressChange}></AddressRender>
+                </div>
+
+
 
             </form>
 
             <button>Submit</button>
             <div>
                 <p>Your Name is {name}</p><br />
-                <br/>
-                {JSON.stringify(address)}
+                homeAddress : {JSON.stringify(homeAddress)} <br/>
+                currentAddress: {JSON.stringify(currentAddress)} 
             </div>
 
 
